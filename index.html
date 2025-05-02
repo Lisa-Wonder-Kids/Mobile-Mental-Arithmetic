@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mental Arithmetic System</title>
   <style>
-    /* Basic reset for margin, padding, height, and background */
     html, body {
       margin: 0;
       padding: 0;
@@ -15,27 +14,25 @@
       overflow: hidden;
     }
 
-    /* Styling for the number display and answer area */
     #number, #answer {
       text-align: center;
       width: 100%;
     }
 
     #number {
-      font-size: 20vw;  /* Large font size for the number */
+      font-size: 20vw;
       font-weight: bold;
-      margin-top: 20vh; /* Vertical margin to center the number */
+      margin-top: 20vh;
     }
 
     #answer {
-      font-size: 10vw;  /* Smaller font for the answer */
+      font-size: 10vw;
       font-weight: bold;
-      color: red;  /* Red color for the answer */
+      color: red;
       margin-top: 2vh;
-      display: none;  /* Initially hide the answer */
+      display: none;
     }
 
-    /* Controls panel positioning */
     .controls {
       position: absolute;
       top: 20px;
@@ -44,7 +41,6 @@
       text-align: center;
     }
 
-    /* Button and input styling */
     button, input {
       padding: 10px 20px;
       margin: 5px;
@@ -53,8 +49,6 @@
   </style>
 </head>
 <body>
-
-  <!-- Control Panel: Speed input, Numbers per set input, and Start Button -->
   <div id="firstPage" class="controls">
     <label>Speed (ms):</label>
     <input type="number" id="speedInput" value="700" min="100" step="100">
@@ -63,154 +57,147 @@
     <button id="toggleButton">START</button>
   </div>
 
-  <!-- Display Area: Where the numbers and answers are shown -->
   <div id="secondPage" style="display: none;">
     <div id="number"></div>
     <div id="answer"></div>
     <div class="controls">
       <button id="nextButton">Next Set</button>
       <button id="returnButton">Back</button>
-      <!-- New "Show Answer" button for mobile users -->
       <button id="showAnswerButton" style="display: none;">Show Answer</button>
     </div>
   </div>
 
   <script>
-    // Function to generate random sets of numbers for the mental arithmetic task
     function generateRandomSets(numSets = 30, numbersPerSet = 9) {
       const sets = [];
+
       for (let i = 0; i < numSets; i++) {
         const set = [];
-        let sum = 0;  // Initialize sum to track the total sum of the numbers in the set
-        
-        // Generate the first number (positive only)
-        const firstNum = Math.floor(Math.random() * 90) + 10;  // Generate first number between 10 and 99
-        set.push(firstNum);
-        sum += firstNum;
+        let runningTotal = 0;
 
-        // Generate middle numbers (random positive or negative)
-        for (let j = 1; j < numbersPerSet - 1; j++) {
-          const num = Math.floor(Math.random() * 90) + 10;  // Generate random number between 10 and 99
-          const signedNum = Math.random() < 0.5 ? num : -num;  // Randomly assign positive or negative sign
-          set.push(signedNum);
-          sum += signedNum;
-        }
+        for (let j = 0; j < numbersPerSet; j++) {
+          let num;
 
-        // Ensure the last number keeps the sum positive
-        if (sum <= 0) {
-          const fix = Math.abs(sum) + Math.floor(Math.random() * 10) + 1;
-          set.push(fix);  // Add a positive number to balance the sum to positive
-        } else {
-          const num = Math.floor(Math.random() * 90) + 10;
-          const signedNum = Math.random() < 0.5 ? num : -num;
-          if (sum + signedNum > 0) {
-            set.push(signedNum);
-          } else {
-            set.push(Math.abs(sum) + Math.floor(Math.random() * 10) + 1);  // Force last number to keep sum positive
+          if (j === 0) {
+            num = Math.floor(Math.random() * 90) + 10;
+            runningTotal += num;
+            set.push(num);
+            continue;
           }
+
+          const canSubtract = runningTotal > 20;
+
+          if (Math.random() < 0.5 && canSubtract) {
+            const maxSub = Math.min(89, runningTotal - 1);
+            num = -(Math.floor(Math.random() * (maxSub - 10 + 1)) + 10);
+          } else {
+            num = Math.floor(Math.random() * 90) + 10;
+          }
+
+          runningTotal += num;
+
+          if (runningTotal <= 0) {
+            const fix = Math.floor(Math.random() * 40) + 60;
+            set.push(fix);
+            runningTotal += fix;
+            continue;
+          }
+
+          set.push(num);
         }
-        
-        sets.push(set); // Add the generated set to the list of sets
+
+        sets.push(set);
       }
+
       return sets;
     }
 
-    let sets = [];  // Array to hold the sets of numbers
-    let currentSetIndex = 0;  // Index of the current set being shown
-    let currentNumberIndex = 0;  // Index of the current number in the current set
-    let countdownInterval;  // Interval for showing numbers
-    let waitingForEnter = false;  // Flag to check if the system is waiting for the Enter key to show the answer
-    let numbersToShow = 5;  // Default number of numbers to show per set
+    let sets = [];
+    let currentSetIndex = 0;
+    let currentNumberIndex = 0;
+    let countdownInterval;
+    let waitingForEnter = false;
+    let numbersToShow = 5;
 
-    // Function to display a number on the screen from the current set
     function displayNumber() {
       const numberDisplay = document.getElementById('number');
       const answerDisplay = document.getElementById('answer');
       const currentSet = sets[currentSetIndex];
 
-      answerDisplay.style.display = 'none';  // Hide the answer until it's time to show it
-
+      answerDisplay.style.display = 'none';
       if (currentNumberIndex < numbersToShow) {
         const number = currentSet[currentNumberIndex];
-        numberDisplay.textContent = number;  // Display the current number
+        numberDisplay.textContent = number;
 
-        // Play a sound whenever a number is displayed (e.g., a "tick" sound)
-        const audio = new Audio('tick.wav');  // Assuming 'tick.wav' exists in the same folder
-        audio.play().catch(err => console.error("Sound error:", err));  // Catch and log any sound errors
+        const audio = new Audio('tick.wav');
+        audio.play().catch(err => console.error("Sound error:", err));
 
-        currentNumberIndex++;  // Move to the next number in the current set
+        currentNumberIndex++;
       } else {
-        clearInterval(countdownInterval);  // Stop the interval once all numbers in the set are shown
-        numberDisplay.textContent = '...';  // Show an ellipsis while waiting for the Enter key
-        waitingForEnter = true;  // Set the flag to indicate waiting for the Enter key
-        // Show the "Show Answer" button for mobile users
+        clearInterval(countdownInterval);
+        numberDisplay.textContent = '...';
+        waitingForEnter = true;
         document.getElementById('showAnswerButton').style.display = 'inline-block';
       }
     }
 
-    // Function to show the answer (the sum of the numbers in the current set)
     function showAnswer() {
       const currentSet = sets[currentSetIndex];
       const answerDisplay = document.getElementById('answer');
-      const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);  // Calculate the sum of the numbers
+      const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);
 
-      answerDisplay.textContent = `Answer: ${sum}`;  // Display the sum as the answer
-      answerDisplay.style.display = 'block';  // Make the answer visible
-      waitingForEnter = false;  // Reset the waiting flag
-      // Hide the "Show Answer" button again
+      answerDisplay.textContent = `Answer: ${sum}`;
+      answerDisplay.style.display = 'block';
+      waitingForEnter = false;
       document.getElementById('showAnswerButton').style.display = 'none';
     }
 
-    // Function to switch between the start page and the task page
     function switchPage() {
       const firstPage = document.getElementById('firstPage');
       const secondPage = document.getElementById('secondPage');
-      const speed = parseInt(document.getElementById('speedInput').value);  // Get the speed from the input
-      numbersToShow = parseInt(document.getElementById('countInput').value);  // Get the numbers per set from the input
+      const speed = parseInt(document.getElementById('speedInput').value);
+      numbersToShow = parseInt(document.getElementById('countInput').value);
 
-      sets = generateRandomSets(30, numbersToShow);  // Generate new random sets
+      sets = generateRandomSets(30, numbersToShow);
 
-      if (firstPage.style.display === 'block') {
-        firstPage.style.display = 'none';  // Hide the first page (control panel)
-        secondPage.style.display = 'block';  // Show the second page (task area)
-        currentSetIndex = 0;  // Reset the set index
-        currentNumberIndex = 0;  // Reset the number index
-        document.getElementById('answer').style.display = 'none';  // Hide the answer
-        displayNumber();  // Display the first number
-        countdownInterval = setInterval(displayNumber, speed);  // Start the interval to show numbers at the chosen speed
+      if (firstPage.style.display === 'block' || firstPage.style.display === '') {
+        firstPage.style.display = 'none';
+        secondPage.style.display = 'block';
+        currentSetIndex = 0;
+        currentNumberIndex = 0;
+        document.getElementById('answer').style.display = 'none';
+        displayNumber();
+        countdownInterval = setInterval(displayNumber, speed);
       } else {
-        firstPage.style.display = 'block';  // Show the first page (control panel)
-        secondPage.style.display = 'none';  // Hide the second page (task area)
-        clearInterval(countdownInterval);  // Stop the number display
+        firstPage.style.display = 'block';
+        secondPage.style.display = 'none';
+        clearInterval(countdownInterval);
       }
     }
 
-    // Function to move to the next set of numbers
     function nextSet() {
-      currentSetIndex++;  // Move to the next set
+      currentSetIndex++;
       if (currentSetIndex >= sets.length) {
-        sets = generateRandomSets(30, numbersToShow);  // If all sets are done, generate new sets
-        currentSetIndex = 0;  // Reset to the first set
+        sets = generateRandomSets(30, numbersToShow);
+        currentSetIndex = 0;
       }
-      currentNumberIndex = 0;  // Reset the number index
-      document.getElementById('number').textContent = '';  // Clear the number display
-      document.getElementById('answer').style.display = 'none';  // Hide the answer
-      const speed = parseInt(document.getElementById('speedInput').value);  // Get the speed again
-      clearInterval(countdownInterval);  // Clear the previous interval
-      displayNumber();  // Display the first number of the next set
-      countdownInterval = setInterval(displayNumber, speed);  // Start the interval to show numbers at the chosen speed
+      currentNumberIndex = 0;
+      document.getElementById('number').textContent = '';
+      document.getElementById('answer').style.display = 'none';
+      const speed = parseInt(document.getElementById('speedInput').value);
+      clearInterval(countdownInterval);
+      displayNumber();
+      countdownInterval = setInterval(displayNumber, speed);
     }
 
-    // Event listeners for the buttons and Enter key
-    document.getElementById('toggleButton').addEventListener('click', switchPage);  // Start/Stop button
-    document.getElementById('returnButton').addEventListener('click', switchPage);  // Back button
-    document.getElementById('nextButton').addEventListener('click', nextSet);  // Next Set button
-    document.getElementById('showAnswerButton').addEventListener('click', showAnswer);  // New "Show Answer" button
+    document.getElementById('toggleButton').addEventListener('click', switchPage);
+    document.getElementById('returnButton').addEventListener('click', switchPage);
+    document.getElementById('nextButton').addEventListener('click', nextSet);
+    document.getElementById('showAnswerButton').addEventListener('click', showAnswer);
 
-    // Listen for the Enter key to show the answer
     document.addEventListener('keydown', function (event) {
       if (waitingForEnter && event.key === 'Enter') {
-        showAnswer();  // Show the answer when Enter is pressed
+        showAnswer();
       }
     });
   </script>
