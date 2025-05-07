@@ -22,17 +22,18 @@
 
     /* Default font size for larger screens */
     #number {
-      font-size: 22vw;
+      font-size: 35vw;
       font-weight: bold;
-      margin-top: 20vh;
+      margin-top: 18vh;
     }
 
     #answer {
-      font-size: 10vw;
-      font-weight: bold;
-      color: red;
-      margin-top: 1vh;
-      display: none;
+     font-size: 35vw; /* Increased from 10vw to 14vw */
+     font-weight: bold;
+     color: red;
+     position: relative;
+     top: -10px;  /* Move up */
+     display: none;
     }
 
     /* Controls at the top */
@@ -63,24 +64,31 @@
 
     @media (max-width: 400px) {
       #number {
-        font-size: 50vw;  /* Even larger font size for very small screens */
+        font-size: 55vw;  /* Even larger font size for very small screens */
       }
 
       #answer {
-        font-size: 25vw;  /* Even larger answer font size for very small screens */
+        font-size: 30vw;  /* Even larger answer font size for very small screens */
       }
+     #logo {
+         position: fixed;
+         bottom: 10px;
+         left: 100px;
+         z-index: 1000; /* make sure it stays on top */
+}
     }
   </style>
 </head>
 <body>
-
-  <!-- Page 1: Settings before starting the game -->
+   <!-- Page 1: Settings before starting the game -->
   <div id="firstPage" class="controls">
     <label>Speed (sec):</label>
     <input type="number" id="speedInput" value="1.0" min="0.3" max="5.0" step="0.1">
     <label>Numbers per set:</label>
     <input type="number" id="countInput" value="5" min="1" max="20">
     <button id="toggleButton">START</button>
+
+     <img src="nada.png" alt="Logo" id="logo">
   </div>
 
   <!-- Page 2: Game display area -->
@@ -91,8 +99,9 @@
       <button id="nextButton">Next Set</button>
       <button id="returnButton">Back</button>
       <button id="showAnswerButton" style="display: none;">Show Answer</button>
+       <img src="nada.png" alt="Logo" id="logo">
     </div>
-  </div>
+     </div>
 
   <script>
     function generateRandomSets(numSets = 30, numbersPerSet = 9) {
@@ -162,22 +171,34 @@
         currentNumberIndex++;
       } else {
         clearInterval(countdownInterval);
-        numberDisplay.textContent = '...';
+
+        // Instead of showing '...', show the sum of the numbers
+       // const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);
+        //numberDisplay.textContent = `Answer: ${sum}`;
+
         waitingForEnter = true;
         document.getElementById('showAnswerButton').style.display = 'inline-block';
       }
     }
 
     function showAnswer() {
-      const currentSet = sets[currentSetIndex];
-      const answerDisplay = document.getElementById('answer');
-      const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);
+  const numberDisplay = document.getElementById('number');
+  const answerDisplay = document.getElementById('answer');
+  const currentSet = sets[currentSetIndex];
 
-      answerDisplay.textContent = `Answer: ${sum}`;
-      answerDisplay.style.display = 'block';
-      waitingForEnter = false;
-      document.getElementById('showAnswerButton').style.display = 'none';
-    }
+  // Hide the last number
+  numberDisplay.textContent = '';
+
+  // Calculate and show the answer
+  const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);
+  answerDisplay.textContent = `= ${sum}`;
+  answerDisplay.style.display = 'block';
+
+  // Hide the "Show Answer" button
+  document.getElementById('showAnswerButton').style.display = 'none';
+
+  waitingForEnter = false;
+}
 
     function switchPage() {
       const firstPage = document.getElementById('firstPage');
