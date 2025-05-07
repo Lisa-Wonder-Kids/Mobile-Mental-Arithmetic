@@ -6,90 +6,96 @@
   <title>Mental Arithmetic System</title>
 
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: white;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-    }
-
-    #number, #answer {
-      text-align: center;
-      width: 100%;
-    }
-
-    /* Default font size for larger screens */
-    #number {
-      font-size: 35vw;
-      font-weight: bold;
-      margin-top: 18vh;
-    }
-
-    #answer {
-     font-size: 35vw; /* Increased from 10vw to 14vw */
-     font-weight: bold;
-     color: red;
-     position: relative;
-     top: -10px;  /* Move up */
-     display: none;
-    }
-
-    /* Controls at the top */
-    .controls {
-      position: absolute;
-      top: 20px;
-      left: 0;
-      right: 0;
-      text-align: center;
-    }
-
-    button, input {
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 18px;
-    }
-
-    /* Media Queries for Mobile Devices */
-    @media (max-width: 600px) {
-      #number {
-        font-size: 40vw;  /* Large font size for mobile */
-      }
-
-      #answer {
-        font-size: 20vw;  /* Larger font size for answer on mobile */
-      }
-    }
-
-    @media (max-width: 400px) {
-      #number {
-        font-size: 55vw;  /* Even larger font size for very small screens */
-      }
-
-      #answer {
-        font-size: 30vw;  /* Even larger answer font size for very small screens */
-      }
-     #logo {
-         position: fixed;
-         bottom: 10px;
-         left: 100px;
-         z-index: 1000; /* make sure it stays on top */
+   html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
-    }
+
+#secondPage {
+  display: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#number, #answer {
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Large font size for main numbers and answers */
+#number {
+  font-size: 60vh;
+}
+
+#answer {
+  font-size: 40vh;
+  color: red;
+  display: none;
+  position: relative;
+  top: -10px;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 20px;
+  z-index: 10;
+}
+
+.button-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+  #number {
+    font-size: 65vh;
+  }
+
+  #answer {
+    font-size: 45vh;
+  }
+}
+
+@media (max-width: 400px) {
+  #number {
+    font-size: 70vh;
+  }
+
+  #answer {
+    font-size: 50vh;
+  }
+}
+
   </style>
 </head>
 <body>
    <!-- Page 1: Settings before starting the game -->
-  <div id="firstPage" class="controls">
-    <label>Speed (sec):</label>
-    <input type="number" id="speedInput" value="1.0" min="0.3" max="5.0" step="0.1">
-    <label>Numbers per set:</label>
-    <input type="number" id="countInput" value="5" min="1" max="20">
-    <button id="toggleButton">START</button>
-
-     <img src="nada.png" alt="Logo" id="logo">
-  </div>
+ <div id="firstPage" class="controls">
+  <label>Speed (sec):</label>
+  <input type="number" id="speedInput" value="1.0" min="0.3" max="5.0" step="0.1">
+  <label>Numbers per set:</label>
+  <input type="number" id="countInput" value="5" min="1" max="20">
+  <button id="toggleButton">START</button>
+  <img src="nada.png" alt="Logo" id="logo">
+</div>
 
   <!-- Page 2: Game display area -->
   <div id="secondPage" style="display: none;">
@@ -99,8 +105,7 @@
       <button id="nextButton">Next Set</button>
       <button id="returnButton">Back</button>
       <button id="showAnswerButton" style="display: none;">Show Answer</button>
-       <img src="nada.png" alt="Logo" id="logo">
-    </div>
+      </div>
      </div>
 
   <script>
