@@ -17,65 +17,47 @@
       flex-direction: column;
     }
 
-    #logoWrapper {
-      height: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-    }
-
-    #logo {
-      max-height: 100%;
-      max-width: 100%;
-      height: auto;
-    }
-
     #secondPage {
-      flex: 1;
       display: none;
+      height: 100%;
+      display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-
     button {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+  background-color: #007BFF;     /* Soft blue */
+  color: white;                  /* White text */
+  border: none;                  /* No border */
+  padding: 10px 20px;            /* Space inside */
+  border-radius: 5px;            /* Rounded corners */
+  font-size: 16px;               /* Clear text */
+  cursor: pointer;               /* Pointer on hover */
+  transition: background-color 0.3s; /* Smooth hover effect */
+}
 
-    button:hover {
-      background-color: #0056b3;
-    }
+button:hover {
+  background-color: #0056b3;     /* Darker blue on hover */
+}
 
-    button:active {
-      background-color: #004080;
-    }
+button:active {
+  background-color: #004080;     /* Pressed effect */
+}
 
-    label {
-      font-weight: bold;
-      margin-right: 5px;
-    }
+     .number-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 
-    input[type="number"] {
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-
-    input[type="number"]:focus {
-      border-color: #007BFF;
-    }
-
+#secondPage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
     #number, #answer {
       text-align: center;
       width: 90%;
@@ -83,63 +65,98 @@
       line-height: 1;
     }
 
+    /* Large font size for main numbers and answers */
     #number {
-      font-size: 55vh;
+      font-size: 20vh;
     }
 
     #answer {
-      font-size: 55vh;
+      font-size: 20vh;
       color: red;
       display: none;
       position: relative;
       top: -10px;
     }
 
+    /* Controls */
     .controls {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
       padding: 10px 20px;
       z-index: 10;
     }
 
+    .button-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Mobile optimizations */
     @media (max-width: 400px) {
-      #number, #answer {
-        font-size: 25vh;
+      #number {
+        font-size: 20vh;
+      }
+
+      #answer {
+        font-size: 20vh;
       }
     }
 
     @media (max-width: 300px) {
-      #number, #answer {
-        font-size: 25vh;
+      #number {
+        font-size: 20vh;
       }
+
+      #answer {
+        font-size: 20vh;
     }
+     
+} 
+     #logoContainer {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#logo {
+  height: auto;
+  width: 20%;
+  max-width: 100%; /* Ensures it doesn't overflow on small screens */
+}
   </style>
 </head>
 <body>
-  <div id="logoWrapper">
-    <img src="nada.png" alt="Logo" id="logo">
-  </div>
-
+  <!-- Logo at the top, visible on all pages -->
+  <div id="logoContainer" style="display: flex; justify-content: center; padding: 10px;">
+  <img src="nada.png" alt="Logo" id="logo">
+</div>
+   
+  <!-- Page 1: Settings before starting the game -->
   <div id="firstPage" class="controls">
-    <label for="speedInput">Speed:</label>
+    <label>Speed:</label>
     <input type="number" id="speedInput" value="1.0" min="0.3" max="5.0" step="0.1">
-    <label for="countInput">Numbers/set:</label>
+    <label>Numbers/set:</label>
     <input type="number" id="countInput" value="5" min="1" max="20">
     <button id="toggleButton">START</button>
   </div>
 
-  <div id="secondPage">
+  <!-- Page 2: Game display area -->
+  <div id="secondPage" style="display: none;">
+  <div class="number-wrapper">
     <div id="number"></div>
     <div id="answer"></div>
-    <div class="controls">
-      <button id="nextButton">Next Set</button>
-      <button id="returnButton">Back</button>
-      <button id="showAnswerButton" style="display: none;">Show Answer</button>
-    </div>
   </div>
+  <div class="controls">
+    <button id="nextButton">Next Set</button>
+    <button id="returnButton">Back</button>
+    <button id="showAnswerButton" style="display: none;">Show Answer</button>
+  </div>
+</div>
+
 
   <script>
     function generateRandomSets(numSets = 30, numbersPerSet = 9) {
@@ -209,6 +226,7 @@
         currentNumberIndex++;
       } else {
         clearInterval(countdownInterval);
+
         waitingForEnter = true;
         document.getElementById('showAnswerButton').style.display = 'inline-block';
       }
@@ -219,11 +237,17 @@
       const answerDisplay = document.getElementById('answer');
       const currentSet = sets[currentSetIndex];
 
+      // Hide the last number
       numberDisplay.textContent = '';
+
+      // Calculate and show the answer
       const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);
       answerDisplay.textContent = `${sum}`;
       answerDisplay.style.display = 'block';
+
+      // Hide the "Show Answer" button
       document.getElementById('showAnswerButton').style.display = 'none';
+
       waitingForEnter = false;
     }
 
@@ -237,14 +261,14 @@
 
       if (firstPage.style.display === 'block' || firstPage.style.display === '') {
         firstPage.style.display = 'none';
-        secondPage.style.display = 'flex';
+        secondPage.style.display = 'block';
         currentSetIndex = 0;
         currentNumberIndex = 0;
         document.getElementById('answer').style.display = 'none';
         displayNumber();
         countdownInterval = setInterval(displayNumber, speed);
       } else {
-        firstPage.style.display = 'flex';
+        firstPage.style.display = 'block';
         secondPage.style.display = 'none';
         clearInterval(countdownInterval);
       }
