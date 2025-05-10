@@ -35,11 +35,11 @@
 
     /* Large font size for main numbers and answers */
     #number {
-      font-size: 55vh;
+      font-size: 45vh;
     }
 
     #answer {
-      font-size: 55vh;
+      font-size: 45vh;
       color: red;
       display: none;
       position: relative;
@@ -64,23 +64,23 @@
     }
 
     /* Mobile optimizations */
-    @media (max-width: 600px) {
+    @media (max-width: 400px) {
       #number {
-        font-size: 50vh;
+        font-size: 40vh;
       }
 
       #answer {
-        font-size: 50vh;
+        font-size: 40vh;
       }
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 300px) {
       #number {
-        font-size: 50vh;
+        font-size: 40vh;
       }
 
       #answer {
-        font-size: 50vh;
+        font-size: 40vh;
       }
     }
   </style>
@@ -195,7 +195,7 @@
 
       // Calculate and show the answer
       const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);
-      answerDisplay.textContent = `= ${sum}`;
+      answerDisplay.textContent = `${sum}`;
       answerDisplay.style.display = 'block';
 
       // Hide the "Show Answer" button
