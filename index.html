@@ -17,92 +17,121 @@
       flex-direction: column;
     }
 
-    #secondPage {
-      display: none;
-      height: 100%;
+    #logoWrapper {
+      height: 90px;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px;
+    }
+
+    #logo {
+      max-height: 100%;
+      max-width: 90%;
+      height: auto;
+    }
+
+    #secondPage {
+      flex: 1;
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
 
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:active {
+      background-color: #004080;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+
+    input[type="number"] {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="number"]:focus {
+      border-color: #007BFF;
+    }
+
     #number, #answer {
       text-align: center;
-      width: 90%;
+      width: 80%;
       font-weight: bold;
       line-height: 1;
     }
 
-    /* Large font size for main numbers and answers */
     #number {
-      font-size: 45vh;
+      font-size: 40vh;
     }
 
     #answer {
-      font-size: 45vh;
+      font-size: 40vh;
       color: red;
       display: none;
       position: relative;
       top: -10px;
     }
 
-    /* Controls */
     .controls {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       flex-wrap: wrap;
+      gap: 10px;
       padding: 10px 20px;
       z-index: 10;
     }
 
-    .button-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    /* Mobile optimizations */
-    @media (max-width: 400px) {
-      #number {
-        font-size: 40vh;
-      }
-
-      #answer {
-        font-size: 40vh;
-      }
-    }
-
     @media (max-width: 300px) {
-      #number {
+      #number, #answer {
         font-size: 40vh;
       }
+    }
 
-      #answer {
-        font-size: 40vh;
+    @media (max-width: 200px) {
+      #number, #answer {
+        font-size: 35vh;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Logo at the top, visible on all pages -->
+  <div id="logoWrapper">
+    <img src="nada.png" alt="Logo" id="logo">
+  </div>
 
-  <div style="display: flex; justify-content: center; padding: 10px;">
-  <img src="nada.png" alt="Logo" id="logo">
-</div>
-   
-  <!-- Page 1: Settings before starting the game -->
   <div id="firstPage" class="controls">
-    <label>Speed:</label>
+    <label for="speedInput">Speed:</label>
     <input type="number" id="speedInput" value="1.0" min="0.3" max="5.0" step="0.1">
-    <label>Numbers/set:</label>
+    <label for="countInput">Numbers/set:</label>
     <input type="number" id="countInput" value="5" min="1" max="20">
     <button id="toggleButton">START</button>
   </div>
 
-  <!-- Page 2: Game display area -->
-  <div id="secondPage" style="display: none;">
+  <div id="secondPage">
     <div id="number"></div>
     <div id="answer"></div>
     <div class="controls">
@@ -180,7 +209,6 @@
         currentNumberIndex++;
       } else {
         clearInterval(countdownInterval);
-
         waitingForEnter = true;
         document.getElementById('showAnswerButton').style.display = 'inline-block';
       }
@@ -191,17 +219,11 @@
       const answerDisplay = document.getElementById('answer');
       const currentSet = sets[currentSetIndex];
 
-      // Hide the last number
       numberDisplay.textContent = '';
-
-      // Calculate and show the answer
       const sum = currentSet.slice(0, numbersToShow).reduce((a, b) => a + b, 0);
       answerDisplay.textContent = `${sum}`;
       answerDisplay.style.display = 'block';
-
-      // Hide the "Show Answer" button
       document.getElementById('showAnswerButton').style.display = 'none';
-
       waitingForEnter = false;
     }
 
@@ -215,14 +237,14 @@
 
       if (firstPage.style.display === 'block' || firstPage.style.display === '') {
         firstPage.style.display = 'none';
-        secondPage.style.display = 'block';
+        secondPage.style.display = 'flex';
         currentSetIndex = 0;
         currentNumberIndex = 0;
         document.getElementById('answer').style.display = 'none';
         displayNumber();
         countdownInterval = setInterval(displayNumber, speed);
       } else {
-        firstPage.style.display = 'block';
+        firstPage.style.display = 'flex';
         secondPage.style.display = 'none';
         clearInterval(countdownInterval);
       }
