@@ -158,6 +158,9 @@ button:active {
 
 
   <script>
+    const tickAudio = new Audio('tick.wav');
+    tickAudio.preload = 'auto';
+
     function generateRandomSets(numSets = 30, numbersPerSet = 9) {
       const sets = [];
       for (let i = 0; i < numSets; i++) {
@@ -207,29 +210,33 @@ button:active {
     let countdownInterval;
     let waitingForEnter = false;
     let numbersToShow = 5;
+    
 
-    function displayNumber() {
-      const numberDisplay = document.getElementById('number');
-      const answerDisplay = document.getElementById('answer');
-      const currentSet = sets[currentSetIndex];
+   function displayNumber() {
+  const numberDisplay = document.getElementById('number');
+  const answerDisplay = document.getElementById('answer');
+  const currentSet = sets[currentSetIndex];
 
-      answerDisplay.style.display = 'none';
+  answerDisplay.style.display = 'none';
 
-      if (currentNumberIndex < numbersToShow) {
-        const number = currentSet[currentNumberIndex];
-        numberDisplay.textContent = number;
+  if (currentNumberIndex < numbersToShow) {
+    const number = currentSet[currentNumberIndex];
+    numberDisplay.textContent = number;
 
-        const audio = new Audio('tick.wav');
-        audio.play().catch(err => console.error("Sound error:", err));
+    // ---- PLAY THE TICK SOUND HERE ----
+    tickAudio.pause();
+    tickAudio.currentTime = 0;
+    tickAudio.play().catch(() => {});
 
-        currentNumberIndex++;
-      } else {
-        clearInterval(countdownInterval);
+    currentNumberIndex++;
+  } else {
+    clearInterval(countdownInterval);
+    waitingForEnter = true;
+    document.getElementById('showAnswerButton').style.display = 'inline-block';
+  }
+}
 
-        waitingForEnter = true;
-        document.getElementById('showAnswerButton').style.display = 'inline-block';
-      }
-    }
+
 
     function showAnswer() {
       const numberDisplay = document.getElementById('number');
